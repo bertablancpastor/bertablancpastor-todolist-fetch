@@ -97,7 +97,7 @@ const Form = () => {
 
     useEffect(()=>{//2. Cuando quiero ejecutar una funcion si cambia un estado, es decir utlizamos el array como un observador
         //bloque de codigo que quiero que se ejecute cuando cambia lo que estoy vigilando
-        if (tareas !=0) {
+        if (tareas.length != 0) {
             actualizarTarea()
         }
     },[tareas])
