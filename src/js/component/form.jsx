@@ -39,7 +39,7 @@ const Form = () => {
     const completarTarea = (tarea) => {
         const newArr = tareas.map((item) => {
             if (item.label === tarea) {
-                return { label: item.label, done: true }
+                return { ...item, done: !item.done }
             } else {
                 return item
             }
@@ -47,6 +47,7 @@ const Form = () => {
 
         setTareas(newArr)
     }
+
 
     //Crear usuario en API
     function createdUser() {
@@ -85,7 +86,21 @@ const Form = () => {
                 if (response.status === 404) {
                     createdUser()                 
                 }; // el código de estado = 200 o código = 400 etc. 
-                return response.json()})// => convierto la respuesta buscada en un json => {"info":{},"results":[]} "hola"
+                return response.json()})
+            .then((data) => setTareas(data))// => guardo el json en un espacio de memoria
+            .catch((error) => console.log(error))// => te aviso si algo sale mal
+    }
+
+
+    //Delete a user and all of their todo's
+    function deleteUser() {
+        fetch('https://assets.breatheco.de/apis/fake/todos/user/bertablancpastor', {
+            method: 'DELETE',
+            headers: {
+                "Content-Type": "application/json",
+            },
+        })//busca informacion a la url dada con el metodo especificado
+            .then((response) => response.json())
             .then((data) => console.log(data))// => guardo el json en un espacio de memoria
             .catch((error) => console.log(error))// => te aviso si algo sale mal
     }
@@ -98,8 +113,10 @@ const Form = () => {
     useEffect(()=>{//2. Cuando quiero ejecutar una funcion si cambia un estado, es decir utlizamos el array como un observador
         //bloque de codigo que quiero que se ejecute cuando cambia lo que estoy vigilando
         if (tareas.length != 0) {
-            actualizarTarea()
+            actualizarTarea()                      
         }
+        
+        
     },[tareas])
 
     
@@ -125,14 +142,15 @@ const Form = () => {
                 <button className="btn btn-success" onClick={createdData}>Crear usuario</button>
             </div> */}
             <form>
+            
                 <div className="mb-3">
-                    <input type="text" onChange={handleTarea} onKeyPress={handleKeyPress} className="form-control" id="form2" placeholder="Write a todo" value={tarea} />
+                    <input type="text" onChange={handleTarea} onKeyPress={handleKeyPress}  className="form-control" id="form2" placeholder="Write a todo" value={tarea} />
                 </div>
             </form>
             <button type="button" onClick={pushTarea} className="btn btn-info ms-2t">Add</button>
 
             <ul className="list-group mt-4">{tareas.map((item, index) =>
-                <li key={index} className={`d-flex justify-content-between align-items-center list-group-item ${item.done ? "text-decoration-line-through" : ""}`}>{item.label}
+                 <li key={index} className={`d-flex justify-content-between align-items-center list-group-item ${item.done ? "text-decoration-line-through" : ""}`}>{item.label}                    
                     <span onClick={() => completarTarea(item.label)}>
                         <i className="fa-solid fa-square-check"></i>
                     </span>
@@ -143,6 +161,9 @@ const Form = () => {
             </ul>
             <div className="mt-3">
                 <footer className=" badge rounded-pill text-bg-warning">{tareas.length > 0 ? tareas.length + " items left" : ""}</footer>
+            </div>
+            <div>
+                <button className="btn btn-danger mt-3" onClick={deleteUser}>Eliminar Cuenta</button>
             </div>
         </div>
     );
